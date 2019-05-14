@@ -29,10 +29,17 @@ class Document {
 
 let insert = (db: mongodb.Db | null) => {
   let documents = new Array<Document>()
-  for (let i = 0; i < 1000000; i++) {
+  for (let i = 0; i < 10; i++) {
     documents.push(new Document())
     console.log(documents[i])
   }
 }
 
-insert(null)
+let stopWatch = (f: Function, args: any): number => {
+  let startTime = Date.now()
+  f(args)
+  let endTime = Date.now()
+  return endTime - startTime
+}
+
+console.log(`${stopWatch(insert, null)} ms`)
