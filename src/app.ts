@@ -27,19 +27,43 @@ class Document {
   }
 }
 
-let insert = (db: mongodb.Db | null) => {
+interface Runnable {
+  Run(): void
+}
+
+let dbInsert = (db: mongodb.Db): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    db.collection('Documents').insertOne(new Document(), (err) => {
+      setTimeout(() => {
+        if(err != null) {
+          reject(err)
+        }
+      }, 10)
+    })
+    resolve()
+  })
+}
+
+let insert = (db: mongodb.Db) => {
   let documents = new Array<Document>()
   for (let i = 0; i < 10; i++) {
-    documents.push(new Document())
-    console.log(documents[i])
+    dbInsert(db).then((err) => {
+      if (err != null) console.log(err)
+    })
+    new Document()
   }
 }
 
-let stopWatch = (f: Function, args: any): number => {
+/**
+ * functionの実行時間を計測するユーティリティ。引数は一つだけ。
+ * @param f 
+ * @param args 
+ */
+let stopWatch = (f: Function, args: any): string => {
   let startTime = Date.now()
   f(args)
   let endTime = Date.now()
-  return endTime - startTime
+  return (endTime - startTime).toLocaleString()
 }
 
 console.log(`${stopWatch(insert, null)} ms`)
